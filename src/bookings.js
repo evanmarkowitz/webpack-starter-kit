@@ -44,6 +44,9 @@ class Bookings {
   getBookingsByCustomer(id) {
     return this.bookingsData.filter(booking => booking.userID === id)
   }
+  getQtyRoomsAvailableByDate(date) {
+    return this.getAvailableRoomsByDate(date).length
+  }
   filterByRoomType() {
     // filters all available room by type 
   }

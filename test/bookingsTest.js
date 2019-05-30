@@ -64,4 +64,8 @@ describe('Bookings', function() {
       roomNumber: 165
     }])
   })
+  it('should return the qty of rooms available by date', function() {
+    expect(bookings.getQtyRoomsAvailableByDate("05/06/2019")).to.equal(14)
+    expect(bookings.getQtyRoomsAvailableByDate("05/01/2019")).to.equal(15)
+  })
 })

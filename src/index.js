@@ -73,6 +73,7 @@ $( document ).ready(function() {
     customerRepository = new CustomerRepository(customers)
   }, 1000);
 
+  // $('.main--section').append()
 
 
 
