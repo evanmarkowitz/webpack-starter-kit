@@ -6,7 +6,7 @@ import CustomerRepository from '../src/customerRepository'
 
 
 
-describe('Customer', function() {
+describe('Customer Repository', function() {
   let customers
   let customerRepository
   let customer1

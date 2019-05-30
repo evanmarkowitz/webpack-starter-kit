@@ -57,4 +57,11 @@ describe('Bookings', function() {
       costPerNight: 192.48
     })
   })
+  it('should return bookings by customer id', function() {
+    expect(bookings.getBookingsByCustomer(81)).to.eql([{
+      userID: 81,
+      date: "11/12/2019",
+      roomNumber: 165
+    }])
+  })
 })

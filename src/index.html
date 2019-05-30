@@ -1,13 +1,26 @@
 <!DOCTYPE html>
 <html lang="en-US">
   <head>
-    <title>Webpack Starter Kit</title>
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" rel="stylesheet">
+    <title>FRONT DESK</title>
   </head>
   <body>
-    <h1>Webpack Starter Kit</h1>
-
-    <img src="/images/turing-logo.png" alt="turing logo" height="100px" width="100px">
-
+    <header>
+      <h1 class = 'headline'>front desk</h1>
+      <img class='bell__logo' alt = 'logo of hotel bell' src ='./images/bell.svg'>
+    </header>
+    <nav class = 'nav--bar'>
+      <button class = 'main__button'>MAIN</button>
+      <button class = 'orders__button'>ORDERS</button>
+      <button class = 'rooms__button'>ROOMS</button>
+      <button class = 'customers__button'>CUSTOMERS</button>
+    </nav>
+    <main>
+      <section class = 'main--section'></section>
+      <section class = 'orders--section'></section>
+      <section class = 'rooms--section'></section>
+      <section class = 'customers--section'></section>
+    </main>
     <!-- Do not include the index.js or main.bundle.js file here - it is done automatically by the webpack server -->
   </body>
 </html>

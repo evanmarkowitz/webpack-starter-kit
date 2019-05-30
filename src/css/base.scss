@@ -1,6 +1,48 @@
 /* This is an example of using Sass, otherwise plain CSS works too*/
-$primary-background: pink;
+$primary-background: #fff;
+$accent-color: #13B5EA;
+$background-accent: #EFF1F3;
+
 
 body {
   background-color: $primary-background;
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sans', sans-serif;
+}
+
+header {
+  background-color: $accent-color;
+  display: flex;
+  align-items: center;
+  & .headline {
+    color: $primary-background;
+    margin: 0;
+    padding: 15px;
+    font-size: 48px;
+  }
+  & .bell__logo {
+    width: 40px;
+  }
+}
+
+.nav--bar {
+  display: flex;
+  align-content: space-between;
+  height: 45px;
+  & button {
+    flex: 1;
+    height: 50px;
+    background-color: $primary-background;
+    font-size: 16px;
+  }
+}
+
+main {
+  box-sizing: border-box;
+  padding: 30px;
+  & section {
+    width: 100%;
+    background-color: #EFF1F3;
+  }
 }

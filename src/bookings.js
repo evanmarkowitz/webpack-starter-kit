@@ -41,8 +41,8 @@ class Bookings {
     }, [])
     return availableRooms
   }
-  getBookingsByCustomer() {
-    // gets all the current and past bookings by date
+  getBookingsByCustomer(id) {
+    return this.bookingsData.filter(booking => booking.userID === id)
   }
   filterByRoomType() {
     // filters all available room by type 
