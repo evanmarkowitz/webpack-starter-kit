@@ -17,9 +17,20 @@
     </nav>
     <main>
       <section class = 'main--section'></section>
-      <section class = 'orders--section'></section>
+      <section class = 'orders--section'>
+        <form class ='choose__date__form'>
+          <input type="date" id ='date-input' class = 'calendar'>
+          <button for = "date" type = "button" class = 'submit__date__button'>Submit Date</button>
+        </form>
+      </section>
       <section class = 'rooms--section'></section>
-      <section class = 'customers--section'></section>
+      <section class = 'customers--section'>
+        <form class= 'search--by--cust'>
+          <label>Search by customer</label>
+          <input class = 'search__cust__input'>
+          <button class = 'search__cust__button' for = 'search__cust__input' type = "button">SEARCH BY CUSTOMER NAME</button>
+        </form>
+      </section>
     </main>
     <!-- Do not include the index.js or main.bundle.js file here - it is done automatically by the webpack server -->
   </body>

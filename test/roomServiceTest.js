@@ -52,5 +52,8 @@ describe('Customer', function() {
   it('should get a customers room service total by id for all time', function() {
     expect(roomService.getCustRoomServTotalAllTime(34)).to.eql(17.05)
   })
+  it('shoudl calculate the earning of room service by date', function() {
+    expect(roomService.getRoomServEarnByDate("27/10/2019")).to.equal(21.6)
+  })
 
 })

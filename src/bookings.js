@@ -47,11 +47,22 @@ class Bookings {
   getQtyRoomsAvailableByDate(date) {
     return this.getAvailableRoomsByDate(date).length
   }
+  getPctRoomsAvailableByDate(date) {
+    return Math.floor(100 - (this.getAvailableRoomsByDate(date).length / this.rooms.length * 100)) 
+  }
   filterByRoomType() {
     // filters all available room by type 
   }
   addAbooking() {
     // pushes a booking into the bookingsData
+  }
+  getEarningsByDate(date) {
+    let todaysBookings = this.bookingsData.filter(booking => booking.date === date)
+    return todaysBookings.reduce((acc, curr) => {
+      let roomNumber = curr.roomNumber
+      let foundRoom = this.rooms.find(room => room.number === roomNumber)
+      return acc + foundRoom.costPerNight
+    }, 0)
   }
 }
 

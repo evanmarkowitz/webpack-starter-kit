@@ -21,6 +21,12 @@ class RoomService {
       return acc + curr.totalCost
     }, 0)
   }
+  getRoomServEarnByDate(date) {
+    let todayRS = this.getAllRoomService(date)
+    return todayRS.reduce((acc, curr) => {
+      return acc + curr.totalCost
+    }, 0)
+  }
   addOrder() {
     
   }

@@ -68,4 +68,12 @@ describe('Bookings', function() {
     expect(bookings.getQtyRoomsAvailableByDate("05/06/2019")).to.equal(14)
     expect(bookings.getQtyRoomsAvailableByDate("05/01/2019")).to.equal(15)
   })
+  it('should return the pct of rooms available by date', function() {
+    expect(bookings.getPctRoomsAvailableByDate("05/06/2019")).to.equal(6)
+    expect(bookings.getPctRoomsAvailableByDate("05/01/2019")).to.equal(0)
+  })
+  it('should return the earnings of rooms by date', function() {
+    expect(bookings.getEarningsByDate("05/06/2019")).to.equal(192.48)
+    expect(bookings.getEarningsByDate("05/01/2019")).to.equal(0)
+  })
 })

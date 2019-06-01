@@ -46,3 +46,30 @@ main {
     background-color: #EFF1F3;
   }
 }
+
+.orders-by-date-table {
+  & th {
+    font-weight: bold;
+    text-align: left;
+  }
+  td {
+    padding: 3px;
+  }
+}
+
+.search--by--cust {
+  padding: 15px 0;
+  display: flex;
+  flex-direction: column;
+  & button {
+    width: 405px;
+    background-color: $accent-color;
+    padding: 10px 0;
+    height: 30px
+  }
+  & input {
+    height: 20px;
+    width: 400px;
+    margin: 10px 0;
+  }
+}
