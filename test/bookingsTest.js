@@ -76,4 +76,8 @@ describe('Bookings', function() {
     expect(bookings.getEarningsByDate("05/06/2019")).to.equal(192.48)
     expect(bookings.getEarningsByDate("05/01/2019")).to.equal(0)
   })
+  it('should return whether a customer has a booking on a given date', function() {
+    expect(bookings.createAddBooking(46, "04/08/2019") ).to.equal(true)
+    expect(bookings.createAddBooking(46, "04/09/2019") ).to.equal(false)
+  });
 })

@@ -66,7 +66,7 @@ $( document ).ready(function() {
   let roomService;
   let customerRepository
   let date = new Date()
-  let today = `"${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}"`
+  let today = new Date().toLocaleDateString("en-GB")
   
 
   setTimeout(function() { 
@@ -112,52 +112,65 @@ $( document ).ready(function() {
         })
       }}
 
+    function mapCustOrders(customerOrders, custName) {
+      let sortedData = customerOrders.map((order) => {
+        return `<tr>
+        <td>${custName}</td>
+        <td>${order.userID}</td>
+        <td>${order.food}</td> 
+        <td>${order.totalCost}</td>
+        </tr>`
+      })
+      return sortedData.join(' ')
+    }
+
     function displayUsersOrders(custName, custId) {
       let customerOrders = roomService.getCustRoomServAllTime(custId)
       if (customerOrders.length ===  0) {
         return `${custName} Room Service Orders`
       } else {
-        return customerOrders.map((order) => {
-          return `<table class = "orders-by-date-table"> 
-              <tr>
-                <th>Customer Name</th>
-                <th>User ID</th>
-                <th>Food</th> 
-                <th>Total Cost</th>
-              </tr>
-              return
-              <tr>
-                <td>${custName}</td>
-                <td>${order.userID}</td>
-                <td>${order.food}</td> 
-                <td>${order.totalCost}</td>
-              </tr>
-            </table>`
-        })
+        return `<table class = "orders-by-date-table"> 
+          <tr>
+            <th>Customer Name</th>
+            <th>User ID</th>
+            <th>Food</th> 
+            <th>Total Cost</th>
+          </tr>
+            ${mapCustOrders(customerOrders, custName)}
+        </table>
+        <p>Total: ${roomService.getCustRoomServTotalAllTime(custId)}</p>`
       }
     }
+
+    function mapCustBookings(customerBooks, custName) {
+      let sortedData = customerBooks.map((order) => {
+        return `<tr>
+        <td>${custName}</td>
+        <td>${order.userID}</td>
+        <td>${order.date}</td> 
+        <td>${order.roomNumber}</td>
+        </tr>`
+      })
+      return sortedData.join(' ')
+    }
+  
+
     function displayUsersBookings(custName, custId) {
       let customerBooks = bookings.getBookingsByCustomer(custId)
       if (customerBooks.length ===  0) {
         return `${custName} has no bookings.`
       } else {
-        return customerBooks.map((order) => {
-          return `<table class = "orders-by-date-table"> 
+        return `<table class = "orders-by-date-table"> 
             <tr>
               <th>Customer Name</th>
               <th>User ID</th>
               <th>BookingDate</th> 
               <th>Room Number</th>
             </tr>
-            return
             <tr>
-              <td>${custName}</td>
-              <td>${order.userID}</td>
-              <td>${order.date}</td> 
-              <td>${order.roomNumber}</td>
+              ${mapCustBookings(customerBooks, custName)}
             </tr>
           </table>`
-        })
       }
     }
     
@@ -215,21 +228,70 @@ $( document ).ready(function() {
     $('.search__cust__button').click(function() {
       let name = $('.search__cust__input').val()
       let foundCustomer = customerRepository.findCustomerByName(name)
-      if (foundCustomer !== undefined) {
-        $('.customers--section').append(`<p>Customer Name: ${foundCustomer.name}`)
-        $('.customers--section').append(`<p>Customer ID: ${foundCustomer.id}`)
-        $('.orders--section').append(`${displayUsersOrders(foundCustomer.name, foundCustomer.id)}`)
-        $('.orders--section').append(`<p>Total: ${roomService.getCustRoomServTotalAllTime(foundCustomer.id)}`)
-        $('.rooms--section').append(`${displayUsersBookings(foundCustomer.name, foundCustomer.id)}`)
-        $('.rooms--section').append(`hi`)
-      // } else {
-      //   $(`
-      //   <article>
-      //     <h3>We couldn't find that customer, would you like to search 
-      //   </article>
-      //   `)
-      // }
+      console.log(foundCustomer.length)
+      if (foundCustomer.length !== 0) {
+        foundCustomer.forEach((cust) => {
+          $('.customers--section').append(`
+          <article class = 'customer--card' data-id=${cust.id}>
+          <p>Customer Name: ${cust.name}</p>
+          <p>Customer ID: ${cust.id}</p>
+          <button class = 'select__this__customer'>Select This Customer</button>
+          </article>`
+          )
+        })
+      } else {
+        $('.customers--section').append(` <article>
+              <h3>We couldn't find that customer, press add customer or reviese the search field and search again.</h3>
+            </article>`)
+      }
     })
+    function addBookingButton(id, today) {
+      if (bookings.createAddBooking(id, today) === false) {
+        $('.rooms--section').append(`<button class ='add__booking__button' type='button' >Add a booking</button>`)
+      }
+    }
+
+    $('.customers--section').click(function(event) {
+      if (event.target.className.includes('select__this__customer')) {
+        let id = $(event.target).parent().data('id')
+        let foundCustomer = customerRepository.findCustomerByID(id)
+        $('.orders--section').append(`${displayUsersOrders(foundCustomer.name, id)}`)
+        $('.rooms--section').append(`${displayUsersBookings(foundCustomer.name, foundCustomer.id)}`)
+        addBookingButton(foundCustomer.id, today) 
+        $('.customer--card').remove()
+        $('.current--customer').append(`
+        <article class = 'customer--card' data-id=${foundCustomer.id}>
+        <h3>Current Customer</h3>
+        <p>Customer Name: ${foundCustomer.name}</p>
+        <p>Customer ID: ${foundCustomer.id}</p>
+        </article>`
+        )
+      }
+    })
+
+    $('.add__cust__button').click(function() {
+      let newId = customerRepository.findHighestId()
+      let newCust = new Customer($('.search__cust__input').val(), newId + 1)
+      $('.customers--section').prepend(`<p>Customer Name: ${newCust.name}`)
+      $('.customers--section').prepend(`<p>Customer ID: ${newCust.id}`)
+      customerRepository.addCustomer(newCust)
+      customerRepository.selectCurrentCustomer(newCust)
+    })
+
+    $('.room--section').click(function() {
+      if (event.target.className.includes('add__booking__button')) {
+        $('.rooms--section').append(`
+        <form class = 'add__booking__form'>
+          <h3>Filter by room type</h3>
+            <button class = 'single room'>Single Room</button>
+            <button class = 'junior suite'>Junior Suite/button>
+            <button class = 'residential suite'>Residential Suite</button>
+        </form>
+        `)
+      }
+    })
+
+
 
   }, 2000);
 });

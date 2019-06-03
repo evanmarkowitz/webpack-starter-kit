@@ -11,6 +11,7 @@ describe('Customer Repository', function() {
   let customerRepository
   let customer1
   let customer9
+  let newCust
   beforeEach(function() {
     customers = customersTD.users.map((user) => {
       return new Customer(user.name, user.id)
@@ -18,6 +19,7 @@ describe('Customer Repository', function() {
     customerRepository = new CustomerRepository(customers)
     customer1 = new Customer('Autumn Toy', 1)
     customer9 = new Customer('Florine Jaskolski', 9)
+    newCust = new Customer('Evan Markowitz', 105)
   })
   it('should be an instance of customer', function() {
     expect(customerRepository).to.be.an.instanceOf(CustomerRepository)
@@ -31,7 +33,17 @@ describe('Customer Repository', function() {
     expect(customerRepository.findCustomerByID(9)).to.eql(customer9)
   });
   it('should find the customer by name', function() {
-    expect(customerRepository.findCustomerByName('Autumn Toy')).to.eql(customer1)
-    expect(customerRepository.findCustomerByName('Florine Jaskolski')).to.eql(customer9)
+    expect(customerRepository.findCustomerByName('Autumn Toy')).to.eql([customer1])
+    expect(customerRepository.findCustomerByName('Florine Jaskolski')).to.eql([customer9])
+  });
+  it('should add the customer', function() {
+    expect(customerRepository.customers.includes(newCust)).to.equal(false)
+    customerRepository.addCustomer(newCust)
+    expect(customerRepository.customers.includes(newCust)).to.equal(true)
+  });
+  it('should select the current customer', function() {
+    expect(customerRepository.currentCustomer).to.eql({})
+    customerRepository.selectCurrentCustomer(newCust)
+    expect(customerRepository.currentCustomer).to.eql(newCust)
   });
 })

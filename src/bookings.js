@@ -50,9 +50,6 @@ class Bookings {
   getPctRoomsAvailableByDate(date) {
     return Math.floor(100 - (this.getAvailableRoomsByDate(date).length / this.rooms.length * 100)) 
   }
-  filterByRoomType() {
-    // filters all available room by type 
-  }
   addAbooking() {
     // pushes a booking into the bookingsData
   }
@@ -63,6 +60,15 @@ class Bookings {
       let foundRoom = this.rooms.find(room => room.number === roomNumber)
       return acc + foundRoom.costPerNight
     }, 0)
+  }
+  createAddBooking(id, date) {
+    let custBookings = this.getBookingsByCustomer(id)
+    let result = custBookings.findIndex(custBookings => custBookings.date === date)
+    return  result === -1 ? result = false : result = true
+  }
+  filterByRoomType(date, roomType) {
+    let availableRooms = this.getAvailableRoomsByDate(date)
+    return availableRooms.filter(room => room.roomType === roomType)
   }
 }
 
