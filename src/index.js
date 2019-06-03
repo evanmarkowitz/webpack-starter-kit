@@ -17,10 +17,10 @@ import Customer from './customer';
 import CustomerRepository from './customerRepository';
 
 
+
 console.log('This is the JavaScript entry file - your code begins here.');
 
-var customerData;
-fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/users/users')
+var customerData = fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/users/users')
   .then(function(response) {
     return response.json()
   })
@@ -29,8 +29,7 @@ fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/users/users')
   })
   .catch(err => console.error(err));
 
-var roomsData;
-fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/rooms/rooms')
+var roomsData = fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/rooms/rooms')
   .then(function(response) {
     return response.json()
   })
@@ -39,8 +38,7 @@ fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/rooms/rooms')
   })
   .catch(err => console.error(err));
 
-var bookingsData;
-fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/bookings/bookings')
+var bookingsData = fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/bookings/bookings')
   .then(function(response) {
     return response.json()
   })
@@ -50,14 +48,12 @@ fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/bookings/bookings')
   .catch(err => console.error(err));
 
 
-var roomServicesData;
-fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/room-services/roomServices')
+var roomServicesData = fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/room-services/roomServices')
   .then(function(response) {
     return response.json()
   })
   .then(function(parsedData) {
     roomServicesData = parsedData.roomServices
-    console.log(roomServicesData)
   })
   .catch(err => console.error(err));
 
@@ -67,28 +63,20 @@ $( document ).ready(function() {
   let customerRepository
   let date = new Date()
   let today = new Date().toLocaleDateString("en-GB")
-  
 
-  setTimeout(function() { 
+  async function instatiateBookings() {
+    await roomsData
+    await bookingsData 
     bookings = new Bookings(bookingsData, roomsData)
+    console.log(bookings)
+    await roomServicesData
     roomService = new RoomService(roomServicesData)
+    await customerData
+    console.log(customerData)
     let customers = customerData.map((user) => {
       return new Customer(user.name, user.id)
     })
     customerRepository = new CustomerRepository(customers)
-    console.log(bookings)
-    function calculateTodaysEarnings(today) {
-      let roomServiceTot = roomService.getRoomServEarnByDate(today)
-      let bookingsTot = bookings.getEarningsByDate(today)
-      return roomServiceTot + bookingsTot
-    }
-    $('.main--section').append(
-      `
-      <h1>${date}</h1>
-      <p> Quanitity of Rooms Available: ${bookings.getQtyRoomsAvailableByDate(today)}</p>
-      <p> Percent of Rooms Occupied: ${bookings.getPctRoomsAvailableByDate(today)}%</p>
-      <p> Total Earnings today: ${calculateTodaysEarnings(today)}</p>
-      `)
     function displayTodaysOrders(today) {
       let todaysOrders = roomService.getAllRoomService(today)
       console.log(todaysOrders)
@@ -111,6 +99,26 @@ $( document ).ready(function() {
           </table>`
         })
       }}
+      function calculateTodaysEarnings(today) {
+        let roomServiceTot = roomService.getRoomServEarnByDate(today)
+        let bookingsTot = bookings.getEarningsByDate(today)
+        return roomServiceTot + bookingsTot
+      }
+    $('.orders--section').append(`
+    <p>Room Service Orders Today: ${displayTodaysOrders(today)}</p>
+    `)
+    $('.rooms--section').append(`
+    <p>Most booked date: ${bookings.getMostPopularDate()}</p>
+    <p>Least booked date: ${bookings.getLeastPopularDate()}</p>
+  `)
+  $('.main--section').append(`
+    <h1>${date}</h1>
+    <p> Quanitity of Rooms Available: ${bookings.getQtyRoomsAvailableByDate(today)}</p>
+    <p> Percent of Rooms Occupied: ${bookings.getPctRoomsAvailableByDate(today)}%</p>
+    <p> Total Earnings today: ${calculateTodaysEarnings(today)}</p>
+    `)
+  }
+  instatiateBookings()
 
     function mapCustOrders(customerOrders, custName) {
       let sortedData = customerOrders.map((order) => {
@@ -173,16 +181,6 @@ $( document ).ready(function() {
           </table>`
       }
     }
-    
-    $('.orders--section').append(`
-      <p>Room Service Orders Today: ${displayTodaysOrders(today)}</p>
-    `)
-    $('.rooms--section').append(`
-      <p>Most booked date: ${bookings.getMostPopularDate()}</p>
-      <p>Least booked date: ${bookings.getLeastPopularDate()}</p>
-    `)
-
-
 
     function changeScreen(show) {
       $('.main--section').hide()
@@ -278,7 +276,7 @@ $( document ).ready(function() {
       customerRepository.selectCurrentCustomer(newCust)
     })
 
-    $('.room--section').click(function() {
+    $('.rooms--section').click(function() {
       if (event.target.className.includes('add__booking__button')) {
         $('.rooms--section').append(`
         <form class = 'add__booking__form'>
@@ -289,9 +287,6 @@ $( document ).ready(function() {
         </form>
         `)
       }
+    
     })
-
-
-
-  }, 2000);
 });
