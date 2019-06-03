@@ -50,9 +50,6 @@ class Bookings {
   getPctRoomsAvailableByDate(date) {
     return Math.floor(100 - (this.getAvailableRoomsByDate(date).length / this.rooms.length * 100)) 
   }
-  addAbooking() {
-    // pushes a booking into the bookingsData
-  }
   getEarningsByDate(date) {
     let todaysBookings = this.bookingsData.filter(booking => booking.date === date)
     return todaysBookings.reduce((acc, curr) => {
@@ -69,6 +66,20 @@ class Bookings {
   filterByRoomType(date, roomType) {
     let availableRooms = this.getAvailableRoomsByDate(date)
     return availableRooms.filter(room => room.roomType === roomType)
+  }
+  addAbooking(id, date, roomNumber) {
+    let newBooking = {
+      ['userID']: id,
+      ['date']: date,
+      ['roomNumber']: roomNumber
+    }
+    this.bookingsData.push(newBooking)
+  }
+  deleteBooking(date, customerRepository) {
+    let custRooms = this.getBookingsByCustomer(customerRepository.currentCustomer.id)
+    let booking = custRooms.find(b => b.date === date)
+    let index = this.bookingsData.findIndex(b => b === booking)
+    this.bookingsData.splice(index, 1)
   }
 }
 

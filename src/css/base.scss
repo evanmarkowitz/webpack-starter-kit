@@ -47,13 +47,26 @@ main {
   }
 }
 
-.orders-by-date-table {
+section {
+  box-sizing: border-box;
+  padding: 10px;
+  box-shadow: 2px 4px #cfcbc8;
+  border-radius: 3px;
+}
+
+table {
+  padding: 5%;
+  width: 100%;
+  align-content: space-around;
   & th {
     font-weight: bold;
     text-align: left;
   }
-  td {
-    padding: 3px;
+  & td {
+    text-align: left;
+  }
+  & tr:hover {
+    background-color: $accent-color;
   }
 }
 
@@ -77,4 +90,16 @@ main {
 .current--customer {
   margin-left: auto;
   margin-right: 15px;
+}
+
+.search__cust__button {
+  margin: 10px 0;
+}
+
+.add__booking__form {
+  & button {
+    width: 300px;
+    background-color: $accent-color;
+    height: 30px;
+  }
 }

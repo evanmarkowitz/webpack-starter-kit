@@ -16,10 +16,6 @@ import Bookings from './bookings'
 import Customer from './customer';
 import CustomerRepository from './customerRepository';
 
-
-
-console.log('This is the JavaScript entry file - your code begins here.');
-
 var customerData = fetch('https://fe-apps.herokuapp.com/api/v1/overlook/1903/users/users')
   .then(function(response) {
     return response.json()
@@ -64,6 +60,34 @@ $( document ).ready(function() {
   let date = new Date()
   let today = new Date().toLocaleDateString("en-GB")
 
+  function displayTodaysOrders(today) {
+    let todaysOrders = roomService.getAllRoomService(today)
+    console.log(todaysOrders)
+    if (todaysOrders.length ===  0) {
+      return "You have no Room Service Orders"
+    } else {
+      return todaysOrders.map((order) => {
+        return `<table class = "orders-by-date-table"> 
+          <tr>
+            <th>User ID</th>
+            <th>Food</th> 
+            <th>Total Cost</th>
+          </tr>
+          return
+          <tr>
+            <td>${order.userID}</td>
+            <td>${order.food}</td> 
+            <td>${order.totalCost}</td>
+          </tr>
+        </table>`
+      })
+    }}
+    function calculateTodaysEarnings(today) {
+      let roomServiceTot = roomService.getRoomServEarnByDate(today)
+      let bookingsTot = bookings.getEarningsByDate(today)
+      return roomServiceTot + bookingsTot
+    }
+
   async function instatiateBookings() {
     await roomsData
     await bookingsData 
@@ -77,33 +101,8 @@ $( document ).ready(function() {
       return new Customer(user.name, user.id)
     })
     customerRepository = new CustomerRepository(customers)
-    function displayTodaysOrders(today) {
-      let todaysOrders = roomService.getAllRoomService(today)
-      console.log(todaysOrders)
-      if (todaysOrders.length ===  0) {
-        return "You have no Room Service Orders"
-      } else {
-        return todaysOrders.map((order) => {
-          return `<table class = "orders-by-date-table"> 
-            <tr>
-              <th>User ID</th>
-              <th>Food</th> 
-              <th>Total Cost</th>
-            </tr>
-            return
-            <tr>
-              <td>${order.userID}</td>
-              <td>${order.food}</td> 
-              <td>${order.totalCost}</td>
-            </tr>
-          </table>`
-        })
-      }}
-      function calculateTodaysEarnings(today) {
-        let roomServiceTot = roomService.getRoomServEarnByDate(today)
-        let bookingsTot = bookings.getEarningsByDate(today)
-        return roomServiceTot + bookingsTot
-      }
+    calculateTodaysEarnings(today) 
+
     $('.orders--section').append(`
     <p>Room Service Orders Today: ${displayTodaysOrders(today)}</p>
     `)
@@ -111,6 +110,7 @@ $( document ).ready(function() {
     <p>Most booked date: ${bookings.getMostPopularDate()}</p>
     <p>Least booked date: ${bookings.getLeastPopularDate()}</p>
   `)
+
   $('.main--section').append(`
     <h1>${date}</h1>
     <p> Quanitity of Rooms Available: ${bookings.getQtyRoomsAvailableByDate(today)}</p>
@@ -157,6 +157,8 @@ $( document ).ready(function() {
         <td>${order.userID}</td>
         <td>${order.date}</td> 
         <td>${order.roomNumber}</td>
+        <td><button class ='db' data-id='${order.date}'>Delete Booking</button></td>
+        <td><button class = upgrade>Upgrade Booking</button></td>
         </tr>`
       })
       return sortedData.join(' ')
@@ -168,12 +170,14 @@ $( document ).ready(function() {
       if (customerBooks.length ===  0) {
         return `${custName} has no bookings.`
       } else {
-        return `<table class = "orders-by-date-table"> 
+        return `<table class = "bookings-by-date-table"> 
             <tr>
               <th>Customer Name</th>
               <th>User ID</th>
               <th>BookingDate</th> 
               <th>Room Number</th>
+              <th>Delete</th>
+              <th>Upgrade</th>
             </tr>
             <tr>
               ${mapCustBookings(customerBooks, custName)}
@@ -197,12 +201,10 @@ $( document ).ready(function() {
 
     $('.main__button').click(function() {
       changeScreen('.main--section')
-
     })
 
     $('.rooms__button').click(function() {
       changeScreen('.rooms--section')
-
     })
 
     $('.customers__button').click(function() {
@@ -221,7 +223,6 @@ $( document ).ready(function() {
       let formatDate = `${[day, month, year].join('/')}`
       $('.orders--section').append(`Orders for ${formatDate}: ${displayTodaysOrders(formatDate)}`)
     });
-
 
     $('.search__cust__button').click(function() {
       let name = $('.search__cust__input').val()
@@ -253,10 +254,14 @@ $( document ).ready(function() {
       if (event.target.className.includes('select__this__customer')) {
         let id = $(event.target).parent().data('id')
         let foundCustomer = customerRepository.findCustomerByID(id)
+        customerRepository.selectCurrentCustomer(foundCustomer)
+        $('.orders--section').text('')
+        $('.rooms--section').text('')
         $('.orders--section').append(`${displayUsersOrders(foundCustomer.name, id)}`)
         $('.rooms--section').append(`${displayUsersBookings(foundCustomer.name, foundCustomer.id)}`)
         addBookingButton(foundCustomer.id, today) 
         $('.customer--card').remove()
+        $('.current--customer').text('')
         $('.current--customer').append(`
         <article class = 'customer--card' data-id=${foundCustomer.id}>
         <h3>Current Customer</h3>
@@ -282,11 +287,64 @@ $( document ).ready(function() {
         <form class = 'add__booking__form'>
           <h3>Filter by room type</h3>
             <button class = 'single room'>Single Room</button>
-            <button class = 'junior suite'>Junior Suite/button>
+            <button class = 'junior suite'>Junior Suite</button>
             <button class = 'residential suite'>Residential Suite</button>
         </form>
         `)
+      }  
+    })
+    function displayAvbRooms(avb) {
+      let avbRooms = avb.map((room) => {
+        return `<tr>
+          <td>${room.number}</td>
+          <td>${room.roomType}</td>
+          <td>${room.bidet}</td> 
+          <td>${room.bedSize}</td>
+          <td>${room.numBeds}</td>
+          <td>${room.costPerNight}</td>
+          <td><button class= ${room.number}>Book Now</button></td>
+          </tr>`
+        })
+        return avbRooms.join(' ')
+    }
+
+    $('.rooms--section').click(function(event) {
+      event.preventDefault()
+      if (event.target.className.includes('single room') || 
+          event.target.className.includes('junior suite') || 
+          event.target.className.includes('residential suite')) {
+        let avb = bookings.filterByRoomType(today, event.target.className)
+        console.log(avb)
+        $('.rooms--section').append(`
+        <table class='avb--rooms--table'>
+            <tr>  
+              <th>Room Number</th>
+              <th>Room Type</th>
+              <th>Bidet</th>
+              <th>Bed Size</th>
+              <th>Number of Beds</th>
+              <th>Cost Per Night</th>
+              <th>Book Now</th>
+            </tr>
+            ${displayAvbRooms(avb)}
+        <table>`)
       }
-    
+    })
+    $('.rooms--section').click(function(event){
+      event.preventDefault()
+      let roomNumber = parseInt(event.target.className)
+      if (!isNaN(roomNumber)) {
+        bookings.addAbooking(customerRepository.currentCustomer.id, today, roomNumber)
+        $('.rooms--section').text('')
+        $('.rooms--section').append(`${displayUsersBookings(customerRepository.currentCustomer.name, customerRepository.currentCustomer.id)}`)
+      }
+    })
+    $('.rooms--section').click(function(event){
+      if(event.target.className === 'db') {
+        bookings.deleteBooking($(event.target).data('id'), customerRepository)
+        $('.rooms--section').text('')
+        $('.rooms--section').append(`${displayUsersBookings
+          (customerRepository.currentCustomer.name, customerRepository.currentCustomer.id)}`)
+      }
     })
 });
