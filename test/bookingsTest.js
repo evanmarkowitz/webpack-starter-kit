@@ -15,6 +15,7 @@ describe('Bookings', function() {
   let customer1
   let customer9
   let bookings
+  let newCust
   beforeEach(function() {
     customers = customersTD.users.map((user) => {
       return new Customer(user.name, user.id)
@@ -22,6 +23,7 @@ describe('Bookings', function() {
     customerRepository = new CustomerRepository(customers)
     customer1 = new Customer('Autumn Toy', 1)
     customer9 = new Customer('Florine Jaskolski', 9)
+    newCust = new Customer('Evan Markowitz', 105)
     bookings = new Bookings(bookingsTD.bookings, roomTD.rooms)
   })
   it('should be an instance of Bookings', function() {
@@ -80,4 +82,32 @@ describe('Bookings', function() {
     expect(bookings.createAddBooking(46, "04/08/2019") ).to.equal(true)
     expect(bookings.createAddBooking(46, "04/09/2019") ).to.equal(false)
   });
+  it('should accept new bookings', function () {
+    expect(bookings.bookingsData).to.deep.not.include({
+      userID: 53,
+      date: "11/12/2019",
+      roomNumber: 8
+    })
+    bookings.addAbooking(53, "11/12/2019", 8)
+    expect(bookings.bookingsData).to.deep.include({
+      userID: 53,
+      date: "11/12/2019",
+      roomNumber: 8
+    })
+  });
+  it('should be able to delete a booking', function() {
+    customerRepository.selectCurrentCustomer(newCust)
+    bookings.addAbooking(105, "11/04/2019", 2 )
+    expect(bookings.bookingsData).to.deep.include({
+      userID: 105,
+      date: "11/04/2019",
+      roomNumber: 2
+    })
+    bookings.deleteBooking("11/04/2019", customerRepository)
+    expect(bookings.bookingsData).to.deep.not.include({
+      userID: 105,
+      date: "11/04/2019",
+      roomNumber: 2
+    })
+  })
 })

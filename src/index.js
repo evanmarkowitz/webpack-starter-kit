@@ -10,6 +10,8 @@ import './css/base.scss';
 
 // An example of how you tell webpack to use an image (also need to link to it in the index.html)
 import './images/turing-logo.png'
+import './images/remove.svg'
+import './images/upgrade.svg'
 import './images/bell.svg'
 import RoomService from './roomService';
 import Bookings from './bookings'
@@ -156,8 +158,8 @@ $( document ).ready(function() {
         <td>${order.userID}</td>
         <td>${order.date}</td> 
         <td>${order.roomNumber}</td>
-        <td><button class ='db' data-id='${order.date}'>Delete Booking</button></td>
-        <td><button class = 'upgrade' data-id='${order.date}'>Upgrade Booking</button></td>
+        <td><img src='./images/remove.svg' class ='db' data-id='${order.date}'></td>
+        <td><img src='./images/upgrade.svg' class = 'upgrade' data-id='${order.date}'></td>
         </tr>`
       })
       return sortedData.join(' ')
@@ -301,7 +303,7 @@ $( document ).ready(function() {
           <td>${room.bedSize}</td>
           <td>${room.numBeds}</td>
           <td>${room.costPerNight}</td>
-          <td><button class= ${room.number} data-id='${choosenDate}'>Book Now</button></td>
+          <td><button class= '${room.number}' data-id='${choosenDate}'>Add Booking</button></td>
           </tr>`
         },)
         return avbRooms.join(' ')

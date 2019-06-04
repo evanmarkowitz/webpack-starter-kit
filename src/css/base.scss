@@ -68,6 +68,10 @@ table {
   & tr:hover {
     background-color: $accent-color;
   }
+  & img {
+    display: block;
+    margin: auto;
+  }
 }
 
 .search--by--cust {
@@ -103,4 +107,12 @@ table {
     height: 30px;
   }
 }
+
+.db,
+.upgrade {
+  width: 25px;
+  margin: auto;
+}
+
+
 
