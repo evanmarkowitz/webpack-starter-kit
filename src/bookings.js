@@ -2,6 +2,7 @@ class Bookings {
   constructor(bookingsData, rooms) {
     this.bookingsData = bookingsData;
     this.rooms = rooms;
+    this.roomQuality = ["single room", "junior suite", "residential suite"]
   }
   populateBookingsByDates() {
     let bookingsByDate = this.bookingsData.reduce((acc, booking) => {
@@ -81,6 +82,16 @@ class Bookings {
     let index = this.bookingsData.findIndex(b => b === booking)
     this.bookingsData.splice(index, 1)
   }
+  upgradeRoom(date, customerRepository) {
+    let custRooms = this.getBookingsByCustomer(customerRepository.currentCustomer.id)
+    let booking = custRooms.find(b => b.date === date)
+    let index = this.bookingsData.findIndex(b => b === booking)
+    this.bookingsData.splice(index, 1)
+    let roomInd = this.roomQuality.findIndex(b => b.roomType === booking.roomType)
+    let filteredRooms = this.filterByRoomType(date, this.roomQuality[roomInd + 1])
+    return filteredRooms
+  }
+  
 }
 
 export default Bookings;

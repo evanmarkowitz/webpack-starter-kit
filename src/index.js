@@ -92,7 +92,6 @@ $( document ).ready(function() {
     await roomsData
     await bookingsData 
     bookings = new Bookings(bookingsData, roomsData)
-    console.log(bookings)
     await roomServicesData
     roomService = new RoomService(roomServicesData)
     await customerData
@@ -158,7 +157,7 @@ $( document ).ready(function() {
         <td>${order.date}</td> 
         <td>${order.roomNumber}</td>
         <td><button class ='db' data-id='${order.date}'>Delete Booking</button></td>
-        <td><button class = upgrade>Upgrade Booking</button></td>
+        <td><button class = 'upgrade' data-id='${order.date}'>Upgrade Booking</button></td>
         </tr>`
       })
       return sortedData.join(' ')
@@ -293,7 +292,7 @@ $( document ).ready(function() {
         `)
       }  
     })
-    function displayAvbRooms(avb) {
+    function displayAvbRooms(avb, choosenDate) {
       let avbRooms = avb.map((room) => {
         return `<tr>
           <td>${room.number}</td>
@@ -302,9 +301,9 @@ $( document ).ready(function() {
           <td>${room.bedSize}</td>
           <td>${room.numBeds}</td>
           <td>${room.costPerNight}</td>
-          <td><button class= ${room.number}>Book Now</button></td>
+          <td><button class= ${room.number} data-id='${choosenDate}'>Book Now</button></td>
           </tr>`
-        })
+        },)
         return avbRooms.join(' ')
     }
 
@@ -314,7 +313,6 @@ $( document ).ready(function() {
           event.target.className.includes('junior suite') || 
           event.target.className.includes('residential suite')) {
         let avb = bookings.filterByRoomType(today, event.target.className)
-        console.log(avb)
         $('.rooms--section').append(`
         <table class='avb--rooms--table'>
             <tr>  
@@ -326,25 +324,47 @@ $( document ).ready(function() {
               <th>Cost Per Night</th>
               <th>Book Now</th>
             </tr>
-            ${displayAvbRooms(avb)}
+            ${displayAvbRooms(avb, today)}
         <table>`)
       }
     })
+
     $('.rooms--section').click(function(event){
       event.preventDefault()
       let roomNumber = parseInt(event.target.className)
+      let choosenDate = $(event.target).data('id')
       if (!isNaN(roomNumber)) {
-        bookings.addAbooking(customerRepository.currentCustomer.id, today, roomNumber)
+        console.log(choosenDate)
+        bookings.addAbooking(customerRepository.currentCustomer.id, choosenDate, roomNumber)
         $('.rooms--section').text('')
         $('.rooms--section').append(`${displayUsersBookings(customerRepository.currentCustomer.name, customerRepository.currentCustomer.id)}`)
       }
     })
+
     $('.rooms--section').click(function(event){
       if(event.target.className === 'db') {
         bookings.deleteBooking($(event.target).data('id'), customerRepository)
         $('.rooms--section').text('')
         $('.rooms--section').append(`${displayUsersBookings
           (customerRepository.currentCustomer.name, customerRepository.currentCustomer.id)}`)
+      }
+    })
+    $('.rooms--section').click(function(event){
+      if(event.target.className === 'upgrade') {
+        let upgradeRoom = bookings.upgradeRoom($(event.target).data('id'), customerRepository)
+        $('.rooms--section').append(`
+        <table class='avb--rooms--table'>
+            <tr>  
+              <th>Room Number</th>
+              <th>Room Type</th>
+              <th>Bidet</th>
+              <th>Bed Size</th>
+              <th>Number of Beds</th>
+              <th>Cost Per Night</th>
+              <th>Book Now</th>
+            </tr>
+            ${displayAvbRooms(upgradeRoom, $(event.target).data('id'))}
+        <table>`)
       }
     })
 });
