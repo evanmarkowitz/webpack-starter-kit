@@ -1,6 +1,10 @@
 class RoomService {
   constructor(allOrders) {
     this.allOrders = allOrders;
+    this.menu = [{food: "Generic Plastic Sandwich",
+      totalCost: 9.48}, {food: "Generic Soft Sandwich",
+      totalCost: 24.24}
+    ]
   }
   getAllRoomService(date) {
     return this.allOrders.filter(order => order.date === date)
@@ -27,8 +31,12 @@ class RoomService {
       return acc + curr.totalCost
     }, 0)
   }
-  addOrder() {
-    
+  returnCurrentMenu() {
+    return this.menu
+  }
+  addOrder(custId, todaysDate, foodType) {
+    let menuItem = this.menu.find(x => x.food === foodType)
+    this.allOrders.push({userID: custId, date: todaysDate, food: foodType, totalCost: menuItem.totalCost}) 
   }
 }
 

@@ -75,7 +75,6 @@ $( document ).ready(function() {
             <th>Food</th> 
             <th>Total Cost</th>
           </tr>
-          return
           <tr>
             <td>${order.userID}</td>
             <td>${order.food}</td> 
@@ -135,9 +134,6 @@ $( document ).ready(function() {
 
     function displayUsersOrders(custName, custId) {
       let customerOrders = roomService.getCustRoomServAllTime(custId)
-      if (customerOrders.length ===  0) {
-        return `${custName} Room Service Orders`
-      } else {
         return `<table class = "orders-by-date-table"> 
           <tr>
             <th>Customer Name</th>
@@ -147,9 +143,10 @@ $( document ).ready(function() {
           </tr>
             ${mapCustOrders(customerOrders, custName)}
         </table>
-        <p>Total: ${roomService.getCustRoomServTotalAllTime(custId)}</p>`
+        <p>Total: ${roomService.getCustRoomServTotalAllTime(custId)}</p>
+        <button class='add__new__order__button'>Add a new order</button>`
       }
-    }
+    
 
     function mapCustBookings(customerBooks, custName) {
       let sortedData = customerBooks.map((order) => {
@@ -349,6 +346,8 @@ $( document ).ready(function() {
         $('.rooms--section').text('')
         $('.rooms--section').append(`${displayUsersBookings
           (customerRepository.currentCustomer.name, customerRepository.currentCustomer.id)}`)
+          $('.rooms--section').append(`<button class ='add__booking__button' type='button' >Add a booking</button>`)
+
       }
     })
     $('.rooms--section').click(function(event){
@@ -367,6 +366,45 @@ $( document ).ready(function() {
             </tr>
             ${displayAvbRooms(upgradeRoom, $(event.target).data('id'))}
         <table>`)
+      }
+    })
+
+    function dispMenuItems() {
+      let menuItems = roomService.returnCurrentMenu()
+      let sortedData = menuItems.map((item) => {
+        return `<tr>
+          <td>${item.food}</td>
+          <td>${item.totalCost}</td>
+          <td><button class="add__order__final" data-id="${customerRepository.currentCustomer.id}"
+          id="${item.food}">Add Item</td>
+        </tr>`
+      }) 
+      return sortedData.join(' ')
+    }
+
+    $('.orders--section').click(function(event) {
+      if(event.target.className === 'add__new__order__button') {
+        $('.orders--section').append(`
+        <table class='display--menu'>
+          <tr>
+            <th>Menu Item</th>
+            <th>Cost</th>
+          </tr>
+          ${dispMenuItems()}
+        </table>
+        `)
+      }
+    })
+    $('.orders--section').click(function(event) {
+      if(event.target.className === 'add__order__final') {
+       let id = $(event.target).data('id')
+       let foodType = event.target.id
+       console.log(roomService.allOrders)
+       roomService.addOrder(id, today, foodType)
+       console.log(roomService.allOrders)
+       $('.orders--section').text('')
+       $('.orders--section').append(`${displayUsersOrders(customerRepository.currentCustomer.name, 
+        customerRepository.currentCustomer.id)}`)
       }
     })
 });
