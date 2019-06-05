@@ -7,4 +7,6 @@ Front desk is an app that allows hotels to book rooms and room services for thei
 2. es6 Javascript
 3. SASS
 
+
+![Comp](src/images/action2.jpg)
 ![Comp](src/images/action1.jpg)
